@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万科 Vanke - 官网复刻 (再修订)</title>
+    <style>
+        /* 基本重置和页面主体样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* 页头导航 */
+        .main-header {
+            position: absolute; /* 改为绝对定位，不是固定定位，以便实现导航栏叠加在banner上 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000; /* 确保在顶层 */
+            height: 90px; /* 固定高度为90px */
+            display: flex; /* 使用 flex 垂直居中内容 */
+            align-items: center; /* 垂直居中对齐 */
+            background-color: transparent; /* 完全透明 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 半透明白色边框 */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡效果 */
+            padding: 0 15px;
+        }
+
+        .main-header.header-scrolled {
+            position: fixed; /* 滚动后改为固定定位 */
+            background-color: #fff; /* 滚动后变为白色 */
+            border-bottom-color: #eee; /* 标准边框颜色 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 滚动后添加阴影 */
+        }
+
+        /* 根据滚动状态调整文本/元素颜色和阴影 */
+        .main-header .main-nav a,
+        .main-header .header-right .search-icon,
+        .main-header .header-right .qr-area .qr-text,
+        .main-header .logo {
+             color: #fff; /* 初始白色文本 */
+             /* 添加更明显的文字阴影提高在透明背景下的可读性 */
+             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+             transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .main-header.header-scrolled .main-nav a,
+        .main-header.header-scrolled .header-right .search-icon,
+        .main-header.header-scrolled .header-right .qr-area .qr-text {
+            color: #333; /* 滚动后变为深色文本 */
+            text-shadow: none; /* 滚动后移除文字阴影 */
+        }
+         .main-header.header-scrolled .logo {
+             text-shadow: none; /* 滚动后移除文字阴影 */
+         }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%; /* 确保容器占满宽度 */
+            max-width: 1300px; /* 导航栏略宽 */
+            margin: 0 auto;
+            /* 移除这里的 padding，移到 .main-header */
+        }
+
+        .logo {
+            width: 240px; /* 图片logo宽度 */
+            height: 40px; /* 图片logo高度 */
+            /* background-color: rgba(255, 255, 255, 0.2); 临时占位背景色 */
+            /* 如果有logo图片，使用下面的代码替换上面的background-color */
+            /* background-image: url('path/to/logo.png'); */
+            /* background-size: contain; */
+            /* background-repeat: no-repeat; */
+            /* background-position: center; */
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+        }
+
+        .main-nav {
+            position: relative; /* 用于下划线定位 */
+        }
+
+        .main-nav ul {
+            display: flex;
+            position: relative; /* 用于下划线相对定位 */
+            /* 移除垂直padding，由a标签控制高度 */
+            padding: 0;
+            height: 90px; /* 与导航栏同高 */
+        }
+
+        .main-nav li {
+            margin-left: 30px;
+        }
+        .main-nav li:first-child {
+             margin-left: 0; /* 第一个导航项无需左边距 */
+        }
+
+        /* 滑动下划线 */
+        .nav-underline {
+            position: absolute;
+            /* 定位到 ul 的底部，紧贴底边 */
+            bottom: -1px; /* 紧贴导航栏底边，与border重叠 */
+            height: 3px;
+            background-color: #2455ED; /* 改为蓝色主题色 */
+            transition: left 0.3s ease, width 0.3s ease; /* 平滑滑动效果 */
+            pointer-events: none; /* 防止干扰点击事件 */
+        }
+
+        /* 导航栏hover效果优化 */
+        .main-header .main-nav a {
+            font-size: 16px;
+            padding: 33px 0; /* 调整垂直内边距使整个高度贴合90px的导航栏 */
+            position: relative;
+            display: block; /* 设为块级元素以便定位 */
+            transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease; /* 添加所有过渡效果 */
+        }
+        
+        /* 导航项悬停效果 */
+        .main-header .main-nav a:hover {
+            color: #fff; /* 悬停时保持白色，但更亮 */
+            text-shadow: 0 0 10px rgba(255,255,255,0.5); /* 增加发光效果 */
+            transform: translateY(-2px); /* 轻微上移效果 */
+            transition: all 0.2s ease; /* 平滑过渡 */
+        }
+        
+        /* 滚动后导航项悬停效果 */
+        .main-header.header-scrolled .main-nav a:hover {
+            color: #2455ED; /* 改为蓝色主题色 */
+            text-shadow: none; /* 移除发光效果 */
+            transform: translateY(-2px); /* 保持上移效果 */
+        }
+        
+        /* 滚动前导航激活项（白色主题）*/
+        .main-header .main-nav a.active {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* 滚动后导航激活项（红色主题）*/
+        .main-header.header-scrolled .main-nav a.active {
+            color: #2455ED; /* 改为蓝色主题色 */
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+         /* 页头右侧项样式 */
+         .header-right .search-icon {
+             margin-left: 20px;
+             font-size: 18px;
+             cursor: pointer;
+             /* 颜色和阴影由滚动状态处理 */
+         }
+
+         .header-right .qr-area {
+            margin-left: 25px;
+            text-align: center;
+         }
+
+         .header-right .qr-image {
+            width: 45px; /* 增大二维码尺寸 */
+            height: 45px;
+            background-color: #ccc; /* 占位背景色 */
+            display: block;
+            margin: 0 auto 2px auto; /* 间距微调 */
+            border: 1px solid rgba(255,255,255,0.3); /* 初始状态边框淡化 */
+            transition: border-color 0.3s ease;
+         }
+         .main-header.header-scrolled .header-right .qr-image {
+             border-color: rgba(0,0,0,0.1); /* 滚动后边框 */
+         }
+
+         .header-right .qr-text {
+            font-size: 12px; /* 略微增大字体 */
+            line-height: 1.2;
+            /* 颜色和阴影由滚动状态处理 */
+         }
+
+        /* Banner 幻灯片区域 */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 590px; /* 增加高度 */
+            overflow: hidden;
+            margin-top: 0; /* 移除顶部外边距 */
+        }
+
+        /* 幻灯片样式 */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            background-size: cover;
+            background-position: center center;
+            z-index: 0;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 1;
+        }
+        .slide a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .slide-1 { background-image: url(./banner1.png); }
+        .slide-2 { background-image: url(./banner2.png); }
+        .slide-3 { background-image: url(./banner3.png); }
+
+        /* 幻灯片导航按钮 */
+        .slideshow-container .prev-btn,
+        .slideshow-container .next-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            border: none;
+            padding: 15px 20px; /* 增大按钮面积 */
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 4px;
+            line-height: 1;
+            /* 修改箭头图标 */
+            font-family: "宋体", SimSun, serif; /* 使用宋体显示箭头 */
+        }
+        .slideshow-container .prev-btn:hover,
+        .slideshow-container .next-btn:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .slideshow-container .prev-btn { left: 20px; }
+        .slideshow-container .next-btn { right: 20px; }
+
+        /* 内容区域 */
+        .content-area {
+            display: flex;
+            align-items: stretch;
+            padding: 40px 0;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 15px;
+            gap: 30px;
+        }
+        .news-section { flex-basis: 60%; min-width: 0; }
+        .news-item { display: flex; align-items: flex-start; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #eee; }
+        .news-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .news-date { text-align: center; margin-right: 20px; flex-shrink: 0; width: 60px; }
+        .news-date .day { font-size: 36px; font-weight: bold; color: #666; line-height: 1; }
+        .news-date .year-month { font-size: 14px; color: #999; }
+        .news-content h3 { font-size: 18px; font-weight: normal; margin-bottom: 5px; color: #333; transition: color 0.3s ease; }
+        .news-content h3:hover { color: #2455ED; }
+        .news-content p { font-size: 14px; color: #777; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .reports-section { flex-basis: 35%; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .report-item {
+            border: 1px solid #eee;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-height: 200px;
+            background-color: #f0f0f0;
+        }
+        .report-item:hover {
+            box-shadow: 0 8px 20px rgba(36, 85, 237, 0.2); /* 使用主题蓝色的阴影 */
+            transform: translateY(-5px); /* 上移效果 */
+            border-color: #2455ED; /* 边框颜色变为主题色 */
+        }
+        .report-item a { display: block; width: 100%; height: 100%; }
+        .report-item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        .report-item:hover img {
+            transform: scale(1.05); /* 图片轻微放大 */
+        }
+        .report-item-1 { background-color: #37474f; }
+        .report-item-2 { background-color: #eceff1; }
+
+        /* 页脚 */
+        .main-footer { background-color: #f8f8f8; padding: 30px 0; border-top: 1px solid #eee; font-size: 12px; color: #666; }
+        .footer-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .footer-links { display: flex; align-items: center; }
+        .footer-badge { width: 24px; height: 24px; margin-right: 15px; background-color: #ccc; display: inline-block; vertical-align: middle; }
+        .footer-links a { margin: 0 10px; color: #666; transition: color 0.3s ease; }
+        .footer-links a:hover { color: #2455ED; }
+        .footer-links span { color: #ccc; }
+        .footer-copyright { text-align: right; }
+        .footer-copyright p { margin-bottom: 5px; }
+        .footer-copyright a { display: block; margin-top: 5px; color: #666; }
+        .footer-copyright a:hover { color: #2455ED; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 页头 -->
+    <header class="main-header" id="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <!-- 当您有logo图片时，可替换为: -->
+                <img src="/logo.png" alt="万科集团">
+            </div>
+            <nav class="main-nav">
+                 <ul>
+                    <li><a href="#" class="active" data-nav-id="home">首页</a></li>
+                    <li><a href="#" data-nav-id="group">要闻</a></li>
+                    <li><a href="#" data-nav-id="news">我们</a></li>
+                    <li><a href="#" data-nav-id="business">行知研实</a></li>
+                    <li><a href="#" data-nav-id="investor">教育强国</a></li>
+                    <li><a href="#" data-nav-id="sustain">新质人才</a></li>
+                    <li><a href="#" data-nav-id="join">区域协同</a></li>
+                    <!-- <li><a href="#" data-nav-id="contact">投诉建议</a></li> -->
+                     <span class="nav-underline" id="nav-underline"></span>
+                </ul>
+            </nav>
+            <div class="header-right">
+                 <span class="search-icon">🔍</span>
+                 <div class="qr-area">
+                    <span class="qr-image"></span>
+                    <span class="qr-text">四川书田教育</span>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main>
+        <!-- Banner 幻灯片区域 -->
+        <section class="slideshow-container">
+            <div class="slide slide-1 active">
+                 <!-- banner_1 -->
+                 <a href="#link1" title="幻灯片 1"></a>
+            </div>
+            <div class="slide slide-2">
+                 <!-- banner_2 -->
+                 <a href="#link2" title="幻灯片 2"></a>
+            </div>
+            <div class="slide slide-3">
+                 <!-- banner_3 -->
+                 <a href="#link3" title="幻灯片 3"></a>
+            </div>
+            <button class="prev-btn" id="prev-slide-btn">&lt;</button>
+            <button class="next-btn" id="next-slide-btn">&gt;</button>
+        </section>
+
+        <!-- 内容区域 (新闻和报告) -->
+        <section class="content-area">
+             <!-- 新闻区域 -->
+             <div class="news-section">
+                 <!-- 新闻项 -->
+                 <div class="news-item">
+                    <div class="news-date"><div class="day">10</div><div class="year-month">2025.04</div></div>
+                    <div class="news-content">
+                         <a href="#"><h3>人才成长新舞台，行知职业教育更精彩！</h3></a>
+                        <p>近日，深圳正式发布《宁静小区建设技术指南》...</p>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date"><div class="day">10</div><div class="year-month">2025.04</div></div>
+                    <div class="news-content"><a href="#"><h3>中国职业教育发展年度报告</h3></a></div>
+                </div>
+                 <div class="news-item">
+                    <div class="news-date"><div class="day">01</div><div class="year-month">2025.04</div></div>
+                    <div class="news-content"><a href="#"><h3>从这里起步，于行知平台深耕职业技能，收获璀璨未来！</h3></a></div>
+                </div>
+                 <div class="news-item">
+                    <div class="news-date"><div class="day">30</div><div class="year-month">2025.03</div></div>
+                    <div class="news-content"><a href="#"><h3>行知人才成长服务平台：让每一次在线学习，都成为职业跃升的阶梯！</h3></a></div>
+                </div>
+                 <div class="news-item">
+                    <div class="news-date"><div class="day">29</div><div class="year-month">2025.03</div></div>
+                    <div class="news-content"><a href="#"><h3>职业梦想不等待，行知教育助你加速开！</h3></a></div>
+                </div>
+            </div>
+             <!-- 报告区域 -->
+             <div class="reports-section">
+                <div class="report-item report-item-1"><a href="#" title="报告 1 链接"><img src="./report1.png"></a></div>
+                <div class="report-item report-item-2"><a href="#" title="报告 2 链接"><img src="./report2.png"></a></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                 <span class="footer-badge"></span>
+                 <a href="#">网站地图</a><span>|</span><a href="#">廉政举报</a><span>|</span><a href="#">违纪查询</a><span>|</span><a href="#">联系关注</a><span>|</span><a href="#">网站支持</a>
+            </div>
+            <div class="footer-copyright">
+                <p>四川书田教育集团 版权所有</p>
+                <p>蜀ICP备2020031350号</p>
+                 <a href="#">法律声明</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 页头滚动效果 ---
+        const header = document.getElementById('main-header');
+        const scrollThreshold = 10;
+        // 获取 slideshow 元素
+        const slideshow = document.querySelector('.slideshow-container');
+        let headerHeight = header.offsetHeight; // 获取初始高度
+
+        function checkScroll() {
+            // 检查并更新导航栏高度，以防万一有动态变化
+            headerHeight = header.offsetHeight;
+            // 根据滚动位置添加/移除 scrolled 类
+            if (window.scrollY > scrollThreshold) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+            // 不再需要设置slideshow margin-top，因为导航栏已叠加在banner上方
+        }
+
+        // --- 导航下划线效果 ---
+        const navLinks = document.querySelectorAll('.main-nav ul li a');
+        const navList = document.querySelector('.main-nav ul'); // 现在基于 ul 定位
+        const underline = document.getElementById('nav-underline');
+        let activeLink = document.querySelector('.main-nav ul li a.active');
+
+        function positionUnderline(element) {
+            if (!element) return;
+            const elementRect = element.getBoundingClientRect();
+            // 注意：定位基准相对于 ul
+            const listRect = navList.getBoundingClientRect();
+
+            // 简化计算，直接使用相对位置
+            const left = elementRect.left - listRect.left;
+            const width = elementRect.width;
+
+            underline.style.left = `${left}px`;
+            underline.style.width = `${width}px`;
+        }
+
+        // 页面加载和窗口大小变化时重新定位下划线
+        function initializeUnderline() {
+            // 确保 activeLink 存在
+            if (!activeLink) {
+                 activeLink = document.querySelector('.main-nav ul li a'); // Fallback to first link if none active
+                 if (activeLink) activeLink.classList.add('active');
+            }
+            // 不再需要设置slideshow margin-top，因为导航栏已叠加在banner上方
+            // 定位下划线
+            positionUnderline(activeLink);
+        }
+
+        window.addEventListener('load', initializeUnderline);
+        window.addEventListener('resize', initializeUnderline); // 窗口变化时也调整
+
+        // 滚动事件监听
+        window.addEventListener('scroll', checkScroll, { passive: true });
+        checkScroll(); // 初始检查
+
+        navLinks.forEach(link => {
+            link.addEventListener('mouseover', () => {
+                positionUnderline(link);
+            });
+             link.addEventListener('click', (e) => {
+                  if (link.getAttribute('href') === '#') { e.preventDefault(); }
+                  if (activeLink) { activeLink.classList.remove('active'); }
+                  link.classList.add('active');
+                  activeLink = link;
+                  positionUnderline(activeLink);
+             });
+        });
+        navList.addEventListener('mouseleave', () => {
+             setTimeout(() => { positionUnderline(activeLink); }, 50);
+        });
+
+
+        // --- 幻灯片逻辑 (保持不变) ---
+        const slides = document.querySelectorAll('.slideshow-container .slide');
+        const prevBtn = document.getElementById('prev-slide-btn');
+        const nextBtn = document.getElementById('next-slide-btn');
+        let currentSlide = 0;
+        const slideIntervalTime = 5000;
+        let slideIntervalId = null;
+
+        function showSlide(index) {
+            const newIndex = (index + slides.length) % slides.length;
+            currentSlide = newIndex;
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === newIndex) { slide.classList.add('active'); }
+            });
+        }
+        function showNextSlide() { showSlide(currentSlide + 1); }
+        function showPrevSlide() { showSlide(currentSlide - 1); }
+        function startSlideshow() {
+             if (slideIntervalId) { clearInterval(slideIntervalId); }
+             slideIntervalId = setInterval(showNextSlide, slideIntervalTime);
+        }
+        prevBtn.addEventListener('click', () => { showPrevSlide(); startSlideshow(); });
+        nextBtn.addEventListener('click', () => { showNextSlide(); startSlideshow(); });
+        showSlide(currentSlide);
+        startSlideshow();
+
+    </script>
+
+</body>
+</html>
